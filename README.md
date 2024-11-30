@@ -1,6 +1,7 @@
 
 # **react-audio-voice-recorder**
-An audio recording helper for React. Provides a component and a hook to help with audio recording.
+Forked version of [react-audio-recorder](https://github.com/samhirtarif/react-audio-recorder) that uses [extendable-media-recorder](https://github.com/chrisguttandin/extendable-media-recorder) to support custom encodings.
+The component offered upstream has been removed for compatibility purposes, but the hook remains. This documentation has not been updated accordingly, but the hook usage should be nearly identical.
 
 [![NPM downloads][npm-download-img]][npm-download-url]
 [![Run ESlint][eslint-img]][eslint-url]
