@@ -1,6 +1,7 @@
 
 # **react-audio-voice-recorder**
 Forked version of [react-audio-recorder](https://github.com/samhirtarif/react-audio-recorder) that uses [extendable-media-recorder](https://github.com/chrisguttandin/extendable-media-recorder) to support custom encodings.
+
 The component offered upstream has been removed for compatibility purposes, but the hook remains. This documentation has not been updated accordingly, but the hook usage should be nearly identical.
 
 [![NPM downloads][npm-download-img]][npm-download-url]
@@ -16,11 +17,7 @@ The component offered upstream has been removed for compatibility purposes, but 
 
 ## Installation
 ```sh
-npm install react-audio-voice-recorder
-```
-
-```sh
-yarn add react-audio-voice-recorder
+npm install https://github.com/harmonherring/react-audio-recorder
 ```
 
 ## Migrating from v1 → v2
