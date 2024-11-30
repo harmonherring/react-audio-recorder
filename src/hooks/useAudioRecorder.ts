@@ -1,4 +1,6 @@
 import { useState, useCallback } from "react";
+import { MediaRecorder, IMediaRecorder, IBlobEvent, register } from "extendable-media-recorder";
+import { connect } from 'extendable-media-recorder-wav-encoder';
 
 export interface recorderControls {
   startRecording: () => void;
@@ -8,7 +10,7 @@ export interface recorderControls {
   isRecording: boolean;
   isPaused: boolean;
   recordingTime: number;
-  mediaRecorder?: MediaRecorder;
+  mediaRecorder?: IMediaRecorder;
 }
 
 export type MediaAudioTrackConstraints = Pick<
@@ -50,7 +52,7 @@ const useAudioRecorder: (
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
-  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder>();
+  const [mediaRecorder, setMediaRecorder] = useState<IMediaRecorder>();
   const [timerInterval, setTimerInterval] = useState<NodeJS.Timer>();
   const [recordingBlob, setRecordingBlob] = useState<Blob>();
 
@@ -72,28 +74,32 @@ const useAudioRecorder: (
   const startRecording: () => void = useCallback(() => {
     if (timerInterval != null) return;
 
-    navigator.mediaDevices
-      .getUserMedia({ audio: audioTrackConstraints ?? true })
-      .then((stream) => {
-        setIsRecording(true);
-        const recorder: MediaRecorder = new MediaRecorder(
-          stream,
-          mediaRecorderOptions
-        );
-        setMediaRecorder(recorder);
-        recorder.start();
-        _startTimer();
+    connect().then((c) => {
+      register(c).then(() => {
+        navigator.mediaDevices
+        .getUserMedia({ audio: audioTrackConstraints ?? true })
+        .then((stream) => {
+          setIsRecording(true);
+          const recorder: IMediaRecorder = new MediaRecorder(
+            stream,
+            mediaRecorderOptions
+          );
+          setMediaRecorder(recorder);
+          recorder.start();
+          _startTimer();
 
-        recorder.addEventListener("dataavailable", (event) => {
-          setRecordingBlob(event.data);
-          recorder.stream.getTracks().forEach((t) => t.stop());
-          setMediaRecorder(undefined);
+          recorder.addEventListener("dataavailable", (event: IBlobEvent) => {
+            setRecordingBlob(event.data);
+            stream.getTracks().forEach((t) => t.stop());
+            setMediaRecorder(undefined);
+          });
+        })
+        .catch((err: DOMException) => {
+          console.log(err.name, err.message, err.cause);
+          onNotAllowedOrFound?.(err);
         });
       })
-      .catch((err: DOMException) => {
-        console.log(err.name, err.message, err.cause);
-        onNotAllowedOrFound?.(err);
-      });
+    });
   }, [
     timerInterval,
     setIsRecording,
